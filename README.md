@@ -95,7 +95,7 @@ margin-right: 1cm
 <!-- ['timestamp', 'exchange', 'symbol', 'exchange_symbol', 'bids', 'asks'] -->
 - **Returns**
     - List of JSONs with following fields:
-      - `timestamp`: When did the error occur
+      - `timestamp`: Timestamp
       - `exchange`: Exchange 
       - `symbol`: Our symbol representation
       - `exchange_symbol`: How the symbol is represented in exchange API
@@ -142,6 +142,79 @@ margin-right: 1cm
 
     base_url = "https://api.exchange-data.carmine.finance"
     endpoint = "/v1/orderbooks"
+
+    end = int(time.time())
+    start = end - 86_400
+    symbol = 'SOL-USDT'
+
+    headers = {
+        "X-API-Key" : "<INSERT API KEY HERE>"
+    }
+
+    request_url = (
+        base_url +
+        endpoint + 
+        f"?start={start}&end={end}&symbol={symbol}"
+    )
+
+    response = requests.get(request_url, headers=headers)
+    ```
+
+
+
+#### */v1/trades*
+- Given `start` and `end` timestamp and `symbol` returns list of aggregated trade volumes for given symbol
+- Allowed symbols: SOL-USDT, SOL-USDC, SOL-USD, SOL-USDT-PERP, SOL-USDC-PERP
+
+<center>
+
+| Param | Type  | Description|
+|--------|-------|------------|
+|`start` | `int` | UNIX timestamp |
+|`end`   | `int` | UNIX timestamp, not inclusive|
+|`symbol`| `str` | Symbol identifier|
+
+</center>
+
+<!-- ['symbol', 'exchange', 'period_start', 'period_end', 'volume', 'price_lower', 'price_upper'] -->
+- **Returns**
+    - List of JSONs with following fields:
+      - `symbol`: Our symbol representation
+      - `exchange`: The exchange where the data is sourced from
+      - `period_start`: The start timestamp of the aggregation period
+      - `period_end`: The end timestamp of the aggregation period
+      - `volume`: The traded volume in the specified period
+      - `price_lower`: The lower price bound for aggregation bucket
+      - `price_upper`: The upper price bound for aggregation bucket
+
+    - Example:
+        ```
+        {
+            "symbol": "SOL-USDT",
+            "exchange": "BINANCE",
+            "period_start": "2024-11-18 21:00:00",
+            "period_end": "2024-11-18 21:00:00",
+            "volume": 5000,
+            "price_lower": 230.0,
+            "price_upper": 240.0
+        }
+        ```
+
+    - Note that endpoint returns daily data only, meaning that for `start` and `end`, data for every day starting from `start` till the `end` (not inclusive) will be returned
+
+- **Limits**:
+  - Max of 5 days can be fetched (`end` - `start` <= 86400 * 5)
+
+- **Headers**:
+  - `X-API-Key` header needs to be provided with valid API key
+
+- **Fetch example**:
+    ```python
+    import requests
+    import time
+
+    base_url = "https://api.exchange-data.carmine.finance"
+    endpoint = "/v1/trades"
 
     end = int(time.time())
     start = end - 86_400
