@@ -7,6 +7,7 @@ margin-right: 1cm
 
 # Exchange data api
 - Base url: https://api.exchange-data.carmine.finance
+- API can accept optional header `Accept-Encoding` with `gzip` value.
 
 
 ### Endpoints
@@ -160,6 +161,9 @@ margin-right: 1cm
     response = requests.get(request_url, headers=headers)
     ```
 
+### */v2/orderbooks*
+- Accepts same params as `v1` version, but additionaly can be passed a `freq` param, which defaults to `5min`
+- Possible `freq` values are: `[5min, 15min, 1h, 4h]`
 
 
 #### */v1/trades*
